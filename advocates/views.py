@@ -8,6 +8,9 @@ from rest_framework import status
 
 
 # Create your views here.
+
+# FUNCTION BASED
+
 # @api_view(['GET'])
 # def GetAdvocates(request):
 #     details = Advocates.objects.all()
@@ -19,6 +22,8 @@ from rest_framework import status
 #     details = Advocates.objects.get(username=userid)
 #     serializer = AdvocatesSerializer(details, many=False)
 #     return Response(serializer.data)
+
+# CLASS BASED
 
 class AdvocatesList(APIView):
 
