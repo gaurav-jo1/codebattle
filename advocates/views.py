@@ -1,14 +1,13 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
-from . models import Advocates
-from .serializers import AdvocatesSerializer
+from . models import Advocate
+from .serializers import UserSerializer, AdvocatesSerializer
 from rest_framework.views import APIView
 from rest_framework import status
-
-# from rest_framework import mixins
-# from rest_framework import generics
-
-
+from rest_framework import mixins
+from rest_framework import generics
+from django.contrib.auth.models import User
+from rest_framework import authentication, permissions
 # Create your views here.
 
 # FUNCTION BASED
@@ -27,39 +26,39 @@ from rest_framework import status
 
 # CLASS BASED
 
-class AdvocatesList(APIView):
+# class AdvocatesList(APIView):
 
-    def get(self, request, format=None):
-        details = Advocates.objects.all()
-        serializer = AdvocatesSerializer(details, many=True)
-        return Response(serializer.data)
+#     def get(self, request, format=None):
+#         details = Advocates.objects.all()
+#         serializer = AdvocatesSerializer(details, many=True)
+#         return Response(serializer.data)
 
-    def post(self, request, format=None):
-        serializer = AdvocatesSerializer(data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data, status=status.HTTP_201_CREATED)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#     def post(self, request, format=None):
+#         serializer = AdvocatesSerializer(data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data, status=status.HTTP_201_CREATED)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-class AdvocateDetail(APIView):
+# class AdvocateDetail(APIView):
 
-    def get(self, request, userid, format=None,):
-        details = Advocates.objects.get(username=userid)
-        serializer = AdvocatesSerializer(details, many=False)
-        return Response(serializer.data)
+#     def get(self, request, userid, format=None,):
+#         details = Advocates.objects.get(username=userid)
+#         serializer = AdvocatesSerializer(details, many=False)
+#         return Response(serializer.data)
 
-    def put(self, request, userid, format=None):
-        snippet = Advocates.objects.get(username=userid)
-        serializer = AdvocatesSerializer(snippet, data=request.data)
-        if serializer.is_valid():
-            serializer.save()
-            return Response(serializer.data)
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+#     def put(self, request, userid, format=None):
+#         snippet = Advocates.objects.get(username=userid)
+#         serializer = AdvocatesSerializer(snippet, data=request.data)
+#         if serializer.is_valid():
+#             serializer.save()
+#             return Response(serializer.data)
+#         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-    def delete(self, request, userid, format=None):
-        snippet = Advocates.objects.get(username=userid)
-        snippet.delete()
-        return Response(status=status.HTTP_204_NO_CONTENT)
+#     def delete(self, request, userid, format=None):
+#         snippet = Advocates.objects.get(username=userid)
+#         snippet.delete()
+#         return Response(status=status.HTTP_204_NO_CONTENT)
 
 
 # Mixins
@@ -73,7 +72,8 @@ class AdvocateDetail(APIView):
 #     def post(self, request, *args, **kwargs):
 #         return self.create(request, *args, **kwargs)
 
-# class AdvocateDetail(mixins.RetrieveModelMixin,mixins.UpdateModelMixin, mixins.DestroyModelMixin, generics.GenericAPIView):
+
+# class AdvocateDetail(mixins.RetrieveModelMixin, mixins.UpdateModelMixin, mixins.DestroyModelMixin, generics.GenericAPIView):
 #     queryset = Advocates.objects.all()
 #     serializer_class = AdvocatesSerializer
 
@@ -85,3 +85,26 @@ class AdvocateDetail(APIView):
 
 #     def delete(self, request, *args, **kwargs):
 #         return self.destroy(request, *args, **kwargs)
+
+# Generics
+
+# class AdvocatesList(generics.ListCreateAPIView):
+#     queryset = User.objects.all()
+#     serializer_class = UserSerializer
+
+
+
+# class AdvocateDetail(generics.RetrieveUpdateDestroyAPIView):
+#     queryset = User.objects.all()
+#     serializer_class = UserSerializer
+
+
+# Authentication
+
+class AdvocatesList(APIView):
+    authentication_classes = [authentication.TokenAuthentication]
+    # permission_classes = [permissions.IsAdminUser]
+
+    def get(self, request, format=None):
+        usernames = [user.username for user in User.objects.all()]
+        return Response(usernames)
